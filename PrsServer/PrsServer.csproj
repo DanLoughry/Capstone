@@ -203,6 +203,10 @@
     <Compile Include="Migrations\201806281632314_initial.Designer.cs">
       <DependentUpon>201806281632314_initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806281753458_added product mod and ctrl.cs" />
+    <Compile Include="Migrations\201806281753458_added product mod and ctrl.Designer.cs">
+      <DependentUpon>201806281753458_added product mod and ctrl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\PrsServerDbContext.cs" />
@@ -299,6 +303,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201806281632314_initial.resx">
       <DependentUpon>201806281632314_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806281753458_added product mod and ctrl.resx">
+      <DependentUpon>201806281753458_added product mod and ctrl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

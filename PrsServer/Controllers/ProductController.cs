@@ -1,77 +1,117 @@
 ﻿using PrsServer.Models;
+using PrsServer.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
-namespace PrsServer.Controllers
-{
-    public class ProductController : ApiController    {
+namespace PrsServer.Controllers{
+
+	[EnableCors(origins: "*", headers: "*", methods: "*")]
+	public class ProductController : ApiController    {
 
 		private PrsServerDbContext db = new PrsServerDbContext();
 
 		[HttpGet]
 		[ActionName("List")]
-		public IEnumerable<Product> List()
+		public JSONResponse List()
 		{
-			return db.Products.ToList();
-
+			return new JSONResponse {
+				Data = db.Products.ToList()
+			};
 		}
+
 		[HttpGet]
 		[ActionName("Get")]
-		public Product Get(int? id)
+		public JSONResponse Get(int? id)
 		{
-			if (id == null)
-				return null;
-			return db.Products.Find(id);
+			if (id == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "ID does not exist"
+				};
+			}
+			return new JSONResponse {
+				Data = db.Products.Find(id)
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Create")]
-		public bool Create(Product product)
+		public JSONResponse Create(Product product)
 		{
-			if (product == null)
-				return false;
+			if (product == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to create becasue null"
+				};
+			}
 			if (!ModelState.IsValid) {
-				return false;
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Model state is invalid, see error",
+					Error = ModelState
+				};
 			}
 			db.Products.Add(product);
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = product
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Change")]
-		public bool Change(Product product)
+		public JSONResponse Change(Product product)
 		{
-			if (product == null)
-				return false;
-			if (!ModelState.IsValid) {
-				return false;
+			if (product == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to create because null"
+				};
 			}
-			var prod = db.Products.Find(product.Id);
-			prod.Partnumber = product.Partnumber;
-			prod.Name = product.Name;
-			prod.Price = product.Price;
-			prod.Unit = product.Unit;
-			prod.Photopath = product.Photopath;
-			prod.VendorId = product.VendorId;
+			if (!ModelState.IsValid) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Modelstate invalid, see error",
+					Error = ModelState
+				};
+			}
+			db.Entry(product).State = System.Data.Entity.EntityState.Modified;
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = product
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Remove")]
-		public bool Remove(Product product)
+		public JSONResponse Remove(Product product)
 		{
-			if (product == null)
-				return false;
-			if (!ModelState.IsValid) {
-				return false;
+			if (product == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to remove because null"
+				};
 			}
-			var prod = db.Products.Find(product.Id);
-			db.Products.Remove(prod);
+			if (!ModelState.IsValid) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Modelstate invalid, see error",
+					Error = ModelState
+				};
+			}
+			db.Entry(product).State = System.Data.Entity.EntityState.Deleted;
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = product
+			};
 		}
 	}
 }

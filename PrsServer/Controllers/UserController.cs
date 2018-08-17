@@ -1,81 +1,117 @@
 ﻿using PrsServer.Models;
+using PrsServer.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace PrsServer.Controllers
 {
-	public class UserController : ApiController
-	{
+
+	[EnableCors(origins: "*", headers: "*", methods: "*")]
+	public class UserController : ApiController	{
 
 		private PrsServerDbContext db = new PrsServerDbContext();
 
 		[HttpGet]
 		[ActionName("List")]
-		public IEnumerable<User> List()
+		public JSONResponse List()
 		{
-			return db.Users.ToList();
-
+			return new JSONResponse {
+				Data = db.Users.ToList()
+			};
 		}
+
 		[HttpGet]
 		[ActionName("Get")]
-		public User Get(int? id)
+		public JSONResponse Get(int? id)
 		{
-			if (id == null)
-				return null;
-			return db.Users.Find(id);
+			if (id == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "ID does not exist"
+				};
+			}
+			return new JSONResponse {
+				Data = db.Users.Find(id)
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Create")]
-		public bool Create(User user)
+		public JSONResponse Create(User user)
 		{
-			if (user == null)
-				return false;
+			if (user == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to create becasue null"
+				};
+			}
 			if (!ModelState.IsValid) {
-				return false;
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Model state is invalid, see error",
+					Error = ModelState
+				};
 			}
 			db.Users.Add(user);
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = user
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Change")]
-		public bool Change(User user)
-		{
-			if (user == null)
-				return false;
-			if (!ModelState.IsValid) {
-				return false;
+		public JSONResponse Change(User user) {
+			if (user == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to create because null"
+				};
 			}
-			var use = db.Users.Find(user.Id);
-			use.Username = user.Username;
-			use.Password = user.Password;
-			use.Firstname = user.Firstname;
-			use.Lastname = user.Lastname;
-			use.Phone = user.Phone;
-			use.Email = user.Email;
-			use.IsReviewer = user.IsReviewer;
-			use.IsAdmin = user.IsAdmin;
-			use.Active = user.Active;
+			if (!ModelState.IsValid) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Modelstate invalid, see error",
+					Error = ModelState
+				};
+			}
+			db.Entry(user).State = System.Data.Entity.EntityState.Modified;
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = user
+			};
 		}
+
 		[HttpPost]
 		[ActionName("Remove")]
-		public bool Remove(User user)
+		public JSONResponse Remove(User user)
 		{
-			if (user == null)
-				return false;
-			if (!ModelState.IsValid) {
-				return false;
+			if (user == null) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Failed to remove because null"
+				};
 			}
-			var cust = db.Users.Find(user.Id);
-			db.Users.Remove(cust);
+			if (!ModelState.IsValid) {
+				return new JSONResponse {
+					Result = "failed",
+					Message = "Modelstate invalid, see error",
+					Error = ModelState
+				};
+			}
+			db.Entry(user).State = System.Data.Entity.EntityState.Deleted;
 			db.SaveChanges();
-			return true;
+			return new JSONResponse {
+				Message = "Success",
+				Data = user
+			};
 		}
 	}
 }

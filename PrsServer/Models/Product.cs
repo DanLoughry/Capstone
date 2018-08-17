@@ -7,6 +7,7 @@ using System.Web;
 namespace PrsServer.Models
 {
 	public class Product	{
+
 		public int Id { get; set; }
 
 		[Required]
@@ -25,12 +26,11 @@ namespace PrsServer.Models
 		[StringLength(50)]
 		public string Unit { get; set; }
 
-		[Required]
-		[StringLength(50)]
+		
+		[StringLength(250)]
 		public string Photopath { get; set; }
 
 		[Required]
-		[Range(0,9)]
 		public int VendorId { get; set; }
 
 		public virtual Vendor Vendor { get; set; }

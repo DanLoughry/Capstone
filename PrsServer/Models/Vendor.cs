@@ -6,8 +6,7 @@ using System.Web;
 
 namespace PrsServer.Models
 {
-	public class Vendor
-	{
+	public class Vendor	{
 
 		public int Id { get; set; }
 
@@ -32,7 +31,7 @@ namespace PrsServer.Models
 		public string State { get; set; }
 
 		[Required]
-		[StringLength(5)]
+		[StringLength(9)]
 		public string Zip { get; set; }
 
 		[Required]
@@ -40,7 +39,7 @@ namespace PrsServer.Models
 		public string Phone { get; set; }
 
 		[Required]
-		[DataType(DataType.Password)]
+		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
 		[Required]		

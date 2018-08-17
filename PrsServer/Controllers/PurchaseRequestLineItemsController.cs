@@ -11,8 +11,7 @@ using System.Web.Http.Cors;
 namespace PrsServer.Controllers{
 
 	[EnableCors(origins: "*", headers: "*", methods: "*")]
-	public class VendorController : ApiController
-	{
+	public class PurchaseRequestLineItemsController : ApiController    {
 
 		private PrsServerDbContext db = new PrsServerDbContext();
 
@@ -21,7 +20,7 @@ namespace PrsServer.Controllers{
 		public JSONResponse List()
 		{
 			return new JSONResponse {
-				Data = db.Vendors.ToList()
+				Data = db.PurchaseRequestLineItems.ToList()
 			};
 		}
 
@@ -36,15 +35,15 @@ namespace PrsServer.Controllers{
 				};
 			}
 			return new JSONResponse {
-				Data = db.Vendors.Find(id)
+				Data = db.PurchaseRequestLineItems.Find(id)
 			};
 		}
 
 		[HttpPost]
 		[ActionName("Create")]
-		public JSONResponse Create(Vendor vendor)
+		public JSONResponse Create(PurchaseRequestLineItem purchaserequestlineitem)
 		{
-			if (vendor == null) {
+			if (purchaserequestlineitem == null) {
 				return new JSONResponse {
 					Result = "failed",
 					Message = "Failed to create becasue null"
@@ -57,19 +56,21 @@ namespace PrsServer.Controllers{
 					Error = ModelState
 				};
 			}
-			db.Vendors.Add(vendor);
+			purchaserequestlineitem.Product = null;
+			purchaserequestlineitem.PurchaseRequest = null;
+			db.PurchaseRequestLineItems.Add(purchaserequestlineitem);
 			db.SaveChanges();
 			return new JSONResponse {
 				Message = "Success",
-				Data = vendor
+				Data = purchaserequestlineitem
 			};
 		}
 
 		[HttpPost]
 		[ActionName("Change")]
-		public JSONResponse Change(Vendor vendor)
+		public JSONResponse Change(PurchaseRequestLineItem purchaserequestlineitem)
 		{
-			if (vendor == null) {
+			if (purchaserequestlineitem == null) {
 				return new JSONResponse {
 					Result = "failed",
 					Message = "Failed to create because null"
@@ -82,19 +83,19 @@ namespace PrsServer.Controllers{
 					Error = ModelState
 				};
 			}
-			db.Entry(vendor).State = System.Data.Entity.EntityState.Modified;
+			db.Entry(purchaserequestlineitem).State = System.Data.Entity.EntityState.Modified;
 			db.SaveChanges();
 			return new JSONResponse {
 				Message = "Success",
-				Data = vendor
+				Data = purchaserequestlineitem
 			};
 		}
 
 		[HttpPost]
 		[ActionName("Remove")]
-		public JSONResponse Remove(Vendor vendor)
+		public JSONResponse Remove(PurchaseRequestLineItem purchaserequestlineitem)
 		{
-			if (vendor == null) {
+			if (purchaserequestlineitem == null) {
 				return new JSONResponse {
 					Result = "failed",
 					Message = "Failed to remove because null"
@@ -107,11 +108,11 @@ namespace PrsServer.Controllers{
 					Error = ModelState
 				};
 			}
-			db.Entry(vendor).State = System.Data.Entity.EntityState.Deleted;
+			db.Entry(purchaserequestlineitem).State = System.Data.Entity.EntityState.Deleted;
 			db.SaveChanges();
 			return new JSONResponse {
 				Message = "Success",
-				Data = vendor
+				Data = purchaserequestlineitem
 			};
 		}
 	}
